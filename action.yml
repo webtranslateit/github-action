@@ -1,0 +1,90 @@
+name: 'WebTranslateIt Sync'
+description: 'Synchronize translation files between your GitHub repository and WebTranslateIt'
+author: 'WebTranslateIt'
+
+branding:
+  icon: 'globe'
+  color: 'blue'
+
+inputs:
+  # Authentication
+  api_key:
+    description: >
+      WTI project API key. Overrides the value in the .wti config file.
+      Recommended: use ${{ secrets.WTI_API_KEY }}.
+      If not provided, the key is read from the .wti file.
+    required: false
+
+  # Config
+  config:
+    description: 'Path to the .wti config file'
+    required: false
+    default: '.wti'
+
+  # Upload options
+  upload_sources:
+    description: 'Push source language files to WebTranslateIt'
+    required: false
+    default: 'true'
+  upload_translations:
+    description: 'Push all target (translated) files too (wti push --target)'
+    required: false
+    default: 'false'
+  push_options:
+    description: 'Additional flags for wti push (e.g. "--merge --ignore-missing --minor")'
+    required: false
+    default: ''
+
+  # Download options
+  download_translations:
+    description: 'Pull translated files from WebTranslateIt'
+    required: false
+    default: 'true'
+  pull_options:
+    description: 'Additional flags for wti pull (e.g. "--force --locale fr")'
+    required: false
+    default: ''
+
+  # Git / PR options
+  push_translations:
+    description: 'Commit and push downloaded translations to the repository'
+    required: false
+    default: 'true'
+  localization_branch_name:
+    description: 'Branch name for translation commits'
+    required: false
+    default: 'l10n_wti_translations'
+  commit_message:
+    description: 'Commit message for translation updates'
+    required: false
+    default: 'New translations from WebTranslateIt'
+  create_pull_request:
+    description: 'Create or update a pull request with translation changes'
+    required: false
+    default: 'true'
+  pull_request_title:
+    description: 'Title of the pull request'
+    required: false
+    default: 'New translations from WebTranslateIt'
+  pull_request_body:
+    description: 'Body of the pull request'
+    required: false
+    default: 'Translations synced by [WebTranslateIt GitHub Action](https://github.com/webtranslateit/github-action)'
+  pull_request_labels:
+    description: 'Comma-separated labels to apply to the pull request'
+    required: false
+    default: 'localization'
+  pull_request_base_branch_name:
+    description: 'Base branch for the pull request (defaults to the repository default branch)'
+    required: false
+    default: ''
+
+outputs:
+  pull_request_url:
+    description: 'URL of the created or updated pull request'
+  pull_request_number:
+    description: 'Number of the created or updated pull request'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'

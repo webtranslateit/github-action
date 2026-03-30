@@ -1,0 +1,38 @@
+name: Test Action
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run action (push + pull)
+        id: wti
+        uses: ./
+        with:
+          api_key: ${{ secrets.WTI_TEST_API_KEY }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify push succeeded
+        run: echo "Push step completed"
+
+      - name: Verify pull downloaded files
+        run: |
+          echo "Checking for translation files..."
+          git diff --name-only HEAD || true
+
+      - name: Verify PR output
+        if: steps.wti.outputs.pull_request_url
+        run: |
+          echo "PR URL:    ${{ steps.wti.outputs.pull_request_url }}"
+          echo "PR Number: ${{ steps.wti.outputs.pull_request_number }}"

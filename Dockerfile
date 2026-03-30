@@ -1,0 +1,8 @@
+FROM ghcr.io/webtranslateit/wti-docker:latest
+
+RUN apk add --no-cache git curl jq bash github-cli
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
