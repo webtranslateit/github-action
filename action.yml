@@ -11,7 +11,7 @@ inputs:
   api_key:
     description: >
       WTI project API key. Overrides the value in the .wti config file.
-      Recommended: use ${{ secrets.WTI_API_KEY }}.
+      Recommended: store it as a GitHub Actions secret.
       If not provided, the key is read from the .wti file.
     required: false
 
