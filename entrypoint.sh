@@ -3,6 +3,7 @@ set -euo pipefail
 
 # ─── Move into the checked-out repository ───────────────────────────────────────
 cd "${GITHUB_WORKSPACE:-.}"
+git config --global --add safe.directory "${GITHUB_WORKSPACE:-.}"
 
 # ─── Helpers ────────────────────────────────────────────────────────────────────
 

@@ -1,6 +1,7 @@
-FROM ghcr.io/webtranslateit/wti-docker:latest
+FROM ruby:alpine
 
-RUN apk add --no-cache git curl jq bash github-cli
+RUN gem install web_translate_it --no-document \
+ && apk add --no-cache git curl jq bash github-cli
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
