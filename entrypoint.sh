@@ -103,8 +103,8 @@ fi
 
 echo "::group::Committing translation changes"
 
-git config user.name "webtranslateit"
-git config user.email "54958704+webtranslateit@users.noreply.github.com"
+git config user.name "webtranslateit-bot"
+git config user.email "272232055+webtranslateit-bot@users.noreply.github.com"
 
 BRANCH="${INPUT_LOCALIZATION_BRANCH_NAME:-l10n_wti_translations}"
 BASE="${INPUT_PULL_REQUEST_BASE_BRANCH_NAME:-}"
