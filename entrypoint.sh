@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
+# ─── Move into the checked-out repository ───────────────────────────────────────
+cd "${GITHUB_WORKSPACE:-.}"
+
 # ─── Helpers ────────────────────────────────────────────────────────────────────
 
 # Sanitize user-provided CLI options: allow only flags, alphanumerics, dashes,
