@@ -5,6 +5,22 @@ set -euo pipefail
 cd "${GITHUB_WORKSPACE:-.}"
 git config --global --add safe.directory "${GITHUB_WORKSPACE:-.}"
 
+# ─── Guard: only run on the default branch or scheduled/manual triggers ─────────
+EVENT="${GITHUB_EVENT_NAME:-}"
+if [ "$EVENT" = "schedule" ] || [ "$EVENT" = "workflow_dispatch" ]; then
+  : # always allowed
+elif [ "$EVENT" = "push" ]; then
+  DEFAULT_BRANCH=$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')
+  CURRENT_BRANCH="${GITHUB_REF#refs/heads/}"
+  if [ "$CURRENT_BRANCH" != "$DEFAULT_BRANCH" ]; then
+    echo "::warning::Skipping: push event on '${CURRENT_BRANCH}', not the default branch '${DEFAULT_BRANCH}'."
+    exit 0
+  fi
+else
+  echo "::warning::Skipping: unsupported event '${EVENT}'. This action only runs on push to the default branch, schedule, or workflow_dispatch."
+  exit 0
+fi
+
 # ─── Helpers ────────────────────────────────────────────────────────────────────
 
 # Sanitize user-provided CLI options: allow only flags, alphanumerics, dashes,
