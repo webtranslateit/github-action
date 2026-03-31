@@ -9,10 +9,7 @@ branding:
 inputs:
   # Authentication
   api_key:
-    description: >
-      WTI project API key. Overrides the value in the .wti config file.
-      Recommended: store it as a GitHub Actions secret.
-      If not provided, the key is read from the .wti file.
+    description: 'WTI project API key. If not provided, the key is read from the .wti config file.'
     required: false
 
   # Config
@@ -33,7 +30,7 @@ inputs:
   push_options:
     description: 'Additional flags for wti push (e.g. "--merge --ignore-missing --minor")'
     required: false
-    default: ''
+    default: '--merge --ignore-missing'
 
   # Download options
   download_translations:
