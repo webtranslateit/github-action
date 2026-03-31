@@ -77,15 +77,28 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-## Push with merge + ignore missing (safe update)
+## Destructive push (override safe defaults)
 
-Avoid obsoleting keys that are missing from the uploaded file and mark changes as minor.
+By default the action pushes with `--merge --ignore-missing` so keys on WTI are never accidentally obsoleted. If you need the old destructive behaviour, clear the default flags:
 
 ```yaml
 - uses: webtranslateit/github-action@v1
   with:
     api_key: ${{ secrets.WTI_API_KEY }}
-    push_options: '--merge --ignore-missing --minor'
+    push_options: ''
+```
+
+## Push target files (translations)
+
+Upload translated files alongside source files. Use with caution — target file uploads can overwrite translations done on WTI.
+
+```yaml
+- uses: webtranslateit/github-action@v1
+  with:
+    api_key: ${{ secrets.WTI_API_KEY }}
+    upload_translations: true
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Pull specific locales only

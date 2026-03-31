@@ -73,8 +73,9 @@ if [ "${INPUT_UPLOAD_SOURCES:-true}" = "true" ]; then
     PUSH_ARGS+=("--target")
   fi
 
-  if [ -n "${INPUT_PUSH_OPTIONS:-}" ]; then
-    SAFE_OPTS=$(sanitize_options "$INPUT_PUSH_OPTIONS")
+  PUSH_OPTIONS="${INPUT_PUSH_OPTIONS---merge --ignore-missing}"
+  if [ -n "$PUSH_OPTIONS" ]; then
+    SAFE_OPTS=$(sanitize_options "$PUSH_OPTIONS")
     # Word-split is intentional here for CLI flags
     # shellcheck disable=SC2206
     PUSH_ARGS+=($SAFE_OPTS)

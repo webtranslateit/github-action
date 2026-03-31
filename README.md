@@ -25,8 +25,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: webtranslateit/github-action@v1
-        with:
-          api_key: ${{ secrets.WTI_API_KEY }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -35,11 +33,11 @@ jobs:
 
 | Input | Description | Default |
 |-------|-------------|---------|
-| `api_key` | WTI API key. Overrides value in `.wti`. Use `${{ secrets.WTI_API_KEY }}`. | — (read from `.wti`) |
+| `api_key` | WTI API key. If not provided, the key is read from the `.wti` config file. | — (read from `.wti`) |
 | `config` | Path to the `.wti` config file | `.wti` |
 | `upload_sources` | Push source files to WTI | `true` |
 | `upload_translations` | Also push target (translated) files | `false` |
-| `push_options` | Extra flags for `wti push` (e.g. `--merge --minor`) | `''` |
+| `push_options` | Flags for `wti push` (see [Safe Sync Model](#safe-sync-model)) | `'--merge --ignore-missing'` |
 | `download_translations` | Pull translations from WTI | `true` |
 | `pull_options` | Extra flags for `wti pull` (e.g. `--force --locale fr`) | `''` |
 | `push_translations` | Commit & push downloaded translations | `true` |
@@ -92,13 +90,62 @@ permissions:
   pull-requests: write
 ```
 
+## Safe Sync Model
+
+By default, source files are pushed with `--merge --ignore-missing`:
+
+- **`--merge`** — new keys in the file are added to WTI; existing translations are not overwritten.
+- **`--ignore-missing`** — keys present on WTI but absent from the uploaded file are left alone (not obsoleted).
+
+This means pushes are **additive** — they can add or update keys, but never delete. Translations done on WTI are never lost by a push.
+
+### Why this matters
+
+Without these flags, pushing a source file that is missing keys (e.g. because a translator added them on WTI and the developer hasn't pulled yet) would silently obsolete those keys and lose their translations.
+
+### Target file uploads
+
+Target file push (`upload_translations: true`) uploads translated files alongside source files. Use this with caution: target file uploads **can overwrite translations** done on WTI, because they replace the full translation content. Only enable this if you are sure your local translations are up to date.
+
+```yaml
+- uses: webtranslateit/github-action@v1
+  with:
+    upload_translations: true
+    push_options: '--merge --ignore-missing'
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+### Overriding the defaults
+
+If you want the old destructive behaviour (keys missing from the file get obsoleted), clear the default flags:
+
+```yaml
+- uses: webtranslateit/github-action@v1
+  with:
+    push_options: ''
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+## Recommended Workflow
+
+1. Developer adds keys and source text (e.g. English) in code, commits, pushes to the default branch.
+2. The action pushes the source file to WTI (safe merge — adds new keys, never deletes).
+3. Translators translate on the WTI web interface.
+4. The action pulls translations back and opens a pull request.
+5. The team merges the PR to get translations into the codebase.
+
+Developers can run `wti pull` locally to preview translations during development, but should never run `wti push` — the action is the sole writer to WTI.
+
 ## Advanced Examples
 
 See [docs/EXAMPLES.md](docs/EXAMPLES.md) for more workflow recipes:
 
 - Upload only on push
 - Scheduled download every 6 hours
-- Push with `--merge --ignore-missing`
+- Destructive push (override safe defaults)
+- Push target files (translations)
 - Pull specific locales
 - Custom config path
 - Using the key from `.wti` directly
